@@ -21,16 +21,45 @@ var GameplayState =
 		this.player.body.setSize(16, 16);
 
 		// Instantiate a tilemap
-		map = game.add.tilemap('level1', 16, 16);
-		map.addTilesetImage('tiles');
-		layer = map.createLayer(0);
-		layer.resizeWorld();
-		map.setCollisionBetween(0, 7);
+		this.map = game.add.tilemap('level1', 16, 16);
+		this.map.addTilesetImage('tiles');
+		this.layer = this.map.createLayer(0);
+		this.layer.resizeWorld();
+		this.map.setCollisionBetween(0, 7);
+
+		// Have the Camera follow the player
+		game.camera.follow(this.player);
 	},
 
 	update: function()
 	{
-		//
+		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
+		{
+			this.player.body.velocity.x = 30;
+		}
+		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+		{
+			this.player.body.velocity.x = -30;
+		}
+		else
+		{
+			this.player.body.velocity.x = 0;
+		}
+
+		if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+		{
+			this.player.body.velocity.y = 30;
+		}
+		else if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
+		{
+			this.player.body.velocity.y = -30;
+		}
+		else
+		{
+			this.player.body.velocity.y = 0;
+		}
+
+		game.physics.arcade.collide(this.player, this.layer);
 	},
 
 	render: function()
