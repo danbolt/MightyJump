@@ -1,6 +1,15 @@
 var game;
+var GameResolution;
 
 var main = function()
 {
-	game = new Phaser.Game(256, 240, Phaser.AUTO, undefined, GameplayState, false, false);
+	GameResolution =
+	{
+		width: 256,
+		height: (window.mobileAndTabletCheck() ? 455 : 240)
+	};
+
+	game = new Phaser.Game(GameResolution.width, GameResolution.height, Phaser.AUTO, "gameDiv", null, false, false);
+	game.state.add('Gameplay', GameplayState, false);
+	game.state.add('Setup', SetupState, true);
 }

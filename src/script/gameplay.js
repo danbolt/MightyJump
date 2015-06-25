@@ -12,6 +12,6 @@ var GameplayState =
 
 	render: function()
 	{
-		game.debug.text("hello, world!", 16, 16, 'white');
+		game.debug.text(window.mobileAndTabletCheck() ? "mobile!" : "desktop", 16, 16, 'white');
 	}
 };
