@@ -30,6 +30,6 @@ var SetupState =
 	{
 		this.setScaling();
 		this.resizeGame();
-		game.state.start('Gameplay');
+		game.state.start('Preload');
 	}
 };
