@@ -1,6 +1,11 @@
 var game;
 var GameResolution;
 
+var LeftButtonDown = false;
+var RightButtonDown = false;
+var BButtonDown = false;
+var AButtonDown = false;
+
 var main = function()
 {
 	GameResolution =

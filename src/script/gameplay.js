@@ -12,6 +12,28 @@ var GameplayState =
 
 	create: function()
 	{
+		// Initialize the touchscreen buttons
+		var leftButton = game.add.button(0, 240, 'touchbuttons', undefined, this, 0, 0, 1, 0);
+		leftButton.onInputDown.add(function() { LeftButtonDown = true; }, this);
+		leftButton.onInputUp.add(function() { LeftButtonDown = false; }, this);
+		leftButton.onInputOut.add(function() { LeftButtonDown = false; }, this);
+		leftButton.fixedToCamera = true;
+		var rightButton = game.add.button(64, 240, 'touchbuttons', function() {}, this, 2, 2, 3, 2);
+		rightButton.onInputDown.add(function() { RightButtonDown = true; }, this);
+		rightButton.onInputUp.add(function() { RightButtonDown = false; }, this);
+		rightButton.onInputOut.add(function() { RightButtonDown = false; }, this);
+		rightButton.fixedToCamera = true;
+		var bButton = game.add.button(128, 240, 'touchbuttons', function() {}, this, 4, 4, 5, 4);
+		bButton.onInputDown.add(function() { BButtonDown = true; }, this);
+		bButton.onInputUp.add(function() { BButtonDown = false; }, this);
+		bButton.onInputOut.add(function() { BButtonDown = false; }, this);
+		bButton.fixedToCamera = true;
+		var aButton = game.add.button(192, 240, 'touchbuttons', function() {}, this, 6, 6, 7, 6);
+		aButton.onInputDown.add(function() { AButtonDown = true; }, this);
+		aButton.onInputUp.add(function() { AButtonDown = false; }, this);
+		aButton.onInputOut.add(function() { AButtonDown = false; }, this);
+		aButton.fixedToCamera = true;
+
 		// Initialize the physics system
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 750;
@@ -36,11 +58,11 @@ var GameplayState =
 	{
 		game.physics.arcade.collide(this.player, this.layer);
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
+		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
 		{
 			this.player.body.velocity.x = 50;
 		}
-		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown)
 		{
 			this.player.body.velocity.x = -50;
 		}
@@ -49,7 +71,7 @@ var GameplayState =
 			this.player.body.velocity.x = 0;
 		}
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.Z) && this.player.body.onFloor())
+		if ((AButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.Z)) && this.player.body.onFloor())
 		{
 			this.player.body.velocity.y = -250;
 		}
