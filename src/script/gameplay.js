@@ -14,6 +14,7 @@ var GameplayState =
 	{
 		// Initialize the physics system
 		game.physics.startSystem(Phaser.Physics.ARCADE);
+		game.physics.arcade.gravity.y = 750;
 
 		// Instantiate the player
 		this.player = game.add.sprite(0, 0, null);
@@ -33,33 +34,25 @@ var GameplayState =
 
 	update: function()
 	{
+		game.physics.arcade.collide(this.player, this.layer);
+
 		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
 		{
-			this.player.body.velocity.x = 30;
+			this.player.body.velocity.x = 50;
 		}
 		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
 		{
-			this.player.body.velocity.x = -30;
+			this.player.body.velocity.x = -50;
 		}
 		else
 		{
 			this.player.body.velocity.x = 0;
 		}
 
-		if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+		if (game.input.keyboard.isDown(Phaser.Keyboard.Z) && this.player.body.onFloor())
 		{
-			this.player.body.velocity.y = 30;
+			this.player.body.velocity.y = -250;
 		}
-		else if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
-		{
-			this.player.body.velocity.y = -30;
-		}
-		else
-		{
-			this.player.body.velocity.y = 0;
-		}
-
-		game.physics.arcade.collide(this.player, this.layer);
 	},
 
 	render: function()

@@ -6,11 +6,11 @@ var SetupState =
 
 		if (window.innerWidth > window.innerHeight) 
 		{
-			scale = window.innerHeight / GameResolution.height;
+			scale = window.innerHeight / GameResolution.height * 0.95;
 		}
 		else
 		{
-			scale = window.innerWidth / GameResolution.width;
+			scale = window.innerWidth / GameResolution.width * 0.95;
 		}
 
 		game.scale.setUserScale(scale, scale);
