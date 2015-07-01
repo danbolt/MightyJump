@@ -1,7 +1,7 @@
 var GameplayState =
 {
 	player: null,
-
+	hater: null,
 	map: null,
 	layer: null,
 
@@ -39,9 +39,14 @@ var GameplayState =
 		game.physics.arcade.gravity.y = 750;
 
 		// Instantiate the player
-		this.player = game.add.sprite(0, 0, null);
-		game.physics.enable(this.player);
+		this.player = game.add.sprite(0, 0, 'sword'); //Step 2 specify image for player
+		game.physics.enable(this.player);//
 		this.player.body.setSize(16, 16);
+		
+		// Instantiate the hater
+		this.hater = game.add.sprite(0, 0, null);
+		game.physics.enable(this.hater);
+		this.hater.body.setSize(16, 16);
 
 		// Instantiate a tilemap
 		this.map = game.add.tilemap('level1', 16, 16);
@@ -56,8 +61,9 @@ var GameplayState =
 
 	update: function()
 	{
-		game.physics.arcade.collide(this.player, this.layer);
-
+		game.physics.arcade.collide(this.player, this.layer);//perform collision detection between player and layer(map)
+		game.physics.arcade.collide(this.hater, this.layer);
+		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
 		{
 			this.player.body.velocity.x = 50;
@@ -81,6 +87,7 @@ var GameplayState =
 	{
 		game.debug.text(window.mobileAndTabletCheck() ? "mobile!" : "desktop", 16, 16, 'white');
 
-		game.debug.body(this.player, 'blue');
+		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
+		game.debug.body(this.hater, 'red');
 	}
 };

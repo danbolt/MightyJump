@@ -4,6 +4,8 @@ var PreloadState =
 	{
 		game.load.tilemap('level1', '../level/level1.csv');
 		game.load.image('tiles', '../image/testTiles.png');
+		//Step 1 Load image for 16x16 sword
+		game.load.image('sword', '../image/sword.png');
 		game.load.spritesheet('touchbuttons', '../image/touchButtons.png', 64, 215);
 	},
 
