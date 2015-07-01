@@ -39,12 +39,16 @@ var GameplayState =
 		game.physics.arcade.gravity.y = 750;
 
 		// Instantiate the player
-		this.player = game.add.sprite(0, 0, 'sword'); //Step 2 specify image for player
+		this.player = game.add.sprite(0, 0, 'wizard'); //Step 2 specify image for player
+		this.player.animations.add('walkRight', [0, 1], 5, true, true);
+		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
+		this.player.animations.add('shootRight', [4], 5, false, true);
+		this.player.animations.add('shootLeft', [5], 5, false, true);
 		game.physics.enable(this.player);//
 		this.player.body.setSize(16, 16);
 		
 		// Instantiate the hater
-		this.hater = game.add.sprite(0, 0, null);
+		this.hater = game.add.sprite(0, 0, 'sword');
 		game.physics.enable(this.hater);
 		this.hater.body.setSize(16, 16);
 
@@ -67,10 +71,12 @@ var GameplayState =
 		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
 		{
 			this.player.body.velocity.x = 50;
+			this.player.animations.play('walkRight');
 		}
 		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown)
 		{
 			this.player.body.velocity.x = -50;
+			this.player.animations.play('walkLeft');
 		}
 		else
 		{
