@@ -37,6 +37,11 @@ var GameplayState =
 		// Initialize the physics system
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 750;
+		
+		// Instantiate the hater
+		this.hater = game.add.sprite(32, 0, 'sword');
+		game.physics.enable(this.hater);
+		this.hater.body.setSize(16, 16);
 
 		// Instantiate the player
 		this.player = game.add.sprite(0, 0, 'wizard'); //Step 2 specify image for player
@@ -44,20 +49,23 @@ var GameplayState =
 		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
 		this.player.animations.add('shootRight', [4], 5, false, true);
 		this.player.animations.add('shootLeft', [5], 5, false, true);
-		game.physics.enable(this.player);//
+		game.physics.enable(this.player);
 		this.player.body.setSize(16, 16);
-		
-		// Instantiate the hater
-		this.hater = game.add.sprite(0, 0, 'sword');
-		game.physics.enable(this.hater);
-		this.hater.body.setSize(16, 16);
 
 		// Instantiate a tilemap
-		this.map = game.add.tilemap('level1', 16, 16);
-		this.map.addTilesetImage('tiles');
-		this.layer = this.map.createLayer(0);
+		this.map = game.add.tilemap(null);
+		this.layer = this.map.create('default', 24, 15, 16, 16);
 		this.layer.resizeWorld();
 		this.map.setCollisionBetween(0, 7);
+		this.map.addTilesetImage('tiles');
+
+		for (var i = 0; i < 24; i++)
+		{
+			this.map.putTile(0, i, 13);
+			this.map.putTile(0, i, 14);
+		}
+
+		console.log(this.map);
 
 		// Have the Camera follow the player
 		game.camera.follow(this.player);
@@ -91,9 +99,9 @@ var GameplayState =
 
 	render: function()
 	{
-		game.debug.text(window.mobileAndTabletCheck() ? 'mobile'! : 'desktop', 16, 16, 'white');
+		game.debug.text(window.mobileAndTabletCheck() ? 'mobile' : 'desktop', 16, 16, 'white');
 
 		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
-		game.debug.body(this.hater, 'red');
+		//game.debug.body(this.hater, 'red');
 	}
 };
