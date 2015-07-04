@@ -28,6 +28,9 @@ var GameplayState =
 	{
 		bullet.kill();
 		enemy.kill();
+
+		PlayerScore += 10;
+		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
 
 	damagePlayer: function(player, enemy)
@@ -59,7 +62,7 @@ var GameplayState =
 	getSword: function(player, sword)
 	{
 		sword.kill();
-		PlayerScore += 10;
+		PlayerScore += 100;
 		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
 	
