@@ -4,7 +4,7 @@ var GameplayState =
 	hater: null,
 
 	playerBullets: null,
-	bulletSpeed: 100,
+	bulletSpeed: 125,
 
 	enemies: null,
 
@@ -59,6 +59,7 @@ var GameplayState =
 		this.player.animations.add('shootLeft', [5], 5, false, true);
 		this.player.facingRight = true;
 		this.player.isShootButtonDown = false;
+		this.player.canShoot = true;
 		game.physics.enable(this.player);
 		this.player.body.setSize(16, 16);
 
@@ -121,11 +122,13 @@ var GameplayState =
 			this.player.body.velocity.y = -250;
 		}
 
-		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false)
+		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true)
 		{
 			var newBullet = this.playerBullets.getFirstDead();
 
 			this.player.isShootButtonDown = true;
+			this.player.canShoot = false;
+			this.game.time.events.add(250, function() { this.player.canShoot = true; }, this);
 
 			if (newBullet != null)
 			{
