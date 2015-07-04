@@ -55,8 +55,8 @@ var GameplayState =
 		this.player = game.add.sprite(0, 0, 'wizard'); //Step 2 specify image for player
 		this.player.animations.add('walkRight', [0, 1], 5, true, true);
 		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
-		this.player.animations.add('shootRight', [4], 5, false, true);
-		this.player.animations.add('shootLeft', [5], 5, false, true);
+		this.player.animations.add('shootRight', [4], 5, true, true);
+		this.player.animations.add('shootLeft', [5], 5, true, true);
 		this.player.facingRight = true;
 		this.player.isShootButtonDown = false;
 		this.player.canShoot = true;
@@ -103,13 +103,19 @@ var GameplayState =
 		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
 		{
 			this.player.body.velocity.x = 50;
-			this.player.animations.play('walkRight');
+			if (this.player.animations.currentAnim.name != 'shootRight')
+			{
+				this.player.animations.play('walkRight');
+			}
 			this.player.facingRight = true;
 		}
 		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown)
 		{
 			this.player.body.velocity.x = -50;
-			this.player.animations.play('walkLeft');
+			if (this.player.animations.currentAnim.name != 'shootLeft')
+			{
+				this.player.animations.play('walkLeft');
+			}
 			this.player.facingRight = false;
 		}
 		else
@@ -135,6 +141,9 @@ var GameplayState =
 				newBullet.reset(this.player.x + (this.player.facingRight ? 16 : 0), this.player.y + 8, 1);
 				newBullet.body.velocity.x = this.bulletSpeed * (this.player.facingRight ? 1 : -1);
 				newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
+
+				this.player.animations.play(this.player.facingRight ? 'shootRight' : 'shootLeft');
+				this.game.time.events.add(300, function() { this.player.animations.play(this.player.facingRight ? 'walkRight' : 'walkLeft'); }, this);
 			}
 		}
 		else if (!(BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == true)
