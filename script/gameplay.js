@@ -11,7 +11,26 @@ var GameplayState =
 	map: null,
 	layer: null,
 
+	health: 0,
+	startingHealth: 3,
+
 	scoreText: null,
+
+	knockBackPlayer: function(right)
+	{
+		if (this.player.knockedBack == true)
+		{
+			return;
+		}
+
+		this.player.knockedBack = true;
+		this.player.flickering = true;
+		this.player.body.velocity.y = -125;
+		this.player.body.velocity.x = right ? 100 : -100;
+		this.game.time.events.add(300, function() { this.player.knockedBack = false; }, this);
+		this.game.time.events.repeat(50, 20, function() { this.player.visible = !this.player.visible }, this);
+		this.game.time.events.add(1000, function() { this.player.flickering = false; }, this);
+	},
 
 	preload: function()
 	{
@@ -60,6 +79,8 @@ var GameplayState =
 		this.player.facingRight = true;
 		this.player.isShootButtonDown = false;
 		this.player.canShoot = true;
+		this.player.knockedBack = false;
+		this.player.flickering = false;
 		game.physics.enable(this.player);
 		this.player.body.setSize(16, 16);
 
@@ -69,6 +90,8 @@ var GameplayState =
 		this.playerBullets.setAll('outOfBoundsKill', true);
 		this.playerBullets.setAll('checkWorldBounds', true);
 		this.playerBullets.setAll('anchor', new Phaser.Point(0.5, 0.5));
+
+		this.health = this.startingHealth;
 
 		// set physics and animation data for the bullets.
 		this.playerBullets.forEach(function(bullet) {
@@ -100,7 +123,7 @@ var GameplayState =
 		game.physics.arcade.collide(this.player, this.layer);//perform collision detection between player and layer(map)
 		game.physics.arcade.collide(this.hater, this.layer);
 		
-		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
+		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
 			this.player.body.velocity.x = 50;
 			if (this.player.animations.currentAnim.name != 'shootRight')
@@ -109,7 +132,7 @@ var GameplayState =
 			}
 			this.player.facingRight = true;
 		}
-		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown)
+		else if ((game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown) && this.player.knockedBack == false)
 		{
 			this.player.body.velocity.x = -50;
 			if (this.player.animations.currentAnim.name != 'shootLeft')
@@ -118,17 +141,21 @@ var GameplayState =
 			}
 			this.player.facingRight = false;
 		}
+		else if (this.player.knockedBack == true)
+		{
+			//
+		}
 		else
 		{
 			this.player.body.velocity.x = 0;
 		}
 
-		if ((AButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.Z)) && this.player.body.onFloor())
+		if ((AButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.Z)) && this.player.body.onFloor() && this.player.knockedBack == false)
 		{
 			this.player.body.velocity.y = -250;
 		}
 
-		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true)
+		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true && this.player.knockedBack == false)
 		{
 			var newBullet = this.playerBullets.getFirstDead();
 
@@ -149,6 +176,11 @@ var GameplayState =
 		else if (!(BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == true)
 		{
 			this.player.isShootButtonDown = false;
+		}
+
+		if (this.player.flickering == false)
+		{
+			this.player.visible = true;
 		}
 	},
 
