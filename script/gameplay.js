@@ -2,7 +2,7 @@ var GameplayState =
 {
 	player: null,
 	hater: null,
-
+	
 	playerBullets: null,
 	enemies: null,
 
@@ -11,6 +11,24 @@ var GameplayState =
 
 	scoreText: null,
 
+	score: 0,
+	scoreText: null,
+	
+	
+	placeSwords: function(x, y, s)
+	{
+		this.hater = game.add.sprite(x, y, s);
+		game.physics.enable(this.hater);
+		this.hater.body.setSize(16, 16);	
+	},
+	
+	getSword: function(player, sword)
+	{
+		sword.kill();
+		this.score += 10;
+		this.scoreText.text = 'Score: ' + this.score;
+	},
+	
 	preload: function()
 	{
 		//
@@ -45,10 +63,25 @@ var GameplayState =
 		game.physics.arcade.gravity.y = 750;
 		
 		// Instantiate the hater
+		this.placeSwords(32, 0, 'sword');
+/*		
 		this.hater = game.add.sprite(32, 0, 'sword');
 		game.physics.enable(this.hater);
 		this.hater.body.setSize(16, 16);
+*/
 
+
+/*
+		this.scollect = game.add.group();
+		this.scollect.enableBody = true;
+		
+		for (var i = 0; i < 12; i++)
+		{
+			var s = scollect.create(i * 70, 0, 'sword');
+			s.body.gravity.y = 6;
+			s.body.bounce.y = 0.7 + Math.random() * 0.2;
+		}
+*/		
 		// Instantiate the player
 		this.player = game.add.sprite(0, 0, 'wizard'); //Step 2 specify image for player
 		this.player.animations.add('walkRight', [0, 1], 5, true, true);
@@ -73,12 +106,19 @@ var GameplayState =
 
 		// Have the Camera follow the player
 		game.camera.follow(this.player);
+		
+		this.scoreText = game.add.text(5, 5, 'score: 0', { fontSize: '10px', fill: '#128' });
+		
+	
 	},
 
 	update: function()
 	{
 		game.physics.arcade.collide(this.player, this.layer);//perform collision detection between player and layer(map)
 		game.physics.arcade.collide(this.hater, this.layer);
+//		game.physics.arcade.collide(this.scollect, this.layer);
+
+		game.physics.arcade.overlap(this.player, this.hater, this.getSword, null, this);
 		
 		if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown)
 		{
@@ -106,4 +146,5 @@ var GameplayState =
 		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
 		//game.debug.body(this.hater, 'red');
 	}
+	
 };
