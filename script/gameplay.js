@@ -178,8 +178,7 @@ var GameplayState =
 
 		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
 		this.enemies.createMultiple(10, 'wizard', 18);
-		this.enemies.setAll('checkWorldBounds', true);
-		this.enemies.forEach(function(enemy) {enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
+		this.enemies.forEach(function(enemy) { enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
 		this.spawnEnemy(8, 0);
 
@@ -196,6 +195,7 @@ var GameplayState =
 		this.player.flickering = false;
 		this.player.anchor.x = 0.5;
 		game.physics.enable(this.player);
+		this.player.body.collideWorldBounds = true;
 		this.player.body.setSize(16, 16);
 
 		// Instantiate the bullet group
