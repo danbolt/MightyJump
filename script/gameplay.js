@@ -2,6 +2,8 @@ var GameplayState =
 {
 	player: null,
 	hater: null,
+
+	enemies: null,
 	
 	playerBullets: null,
 	bulletSpeed: 125,
@@ -17,12 +19,36 @@ var GameplayState =
 	score: 0,
 	scoreText: null,
 	
-	
+	damageEnemy: function(bullet, enemy)
+	{
+		bullet.kill();
+		enemy.kill();
+	},
+
+	damagePlayer: function(player, enemy)
+	{
+		if (player.x < enemy.x)
+		{
+			this.knockBackPlayer(false);
+		}
+		else
+		{
+			this.knockBackPlayer(true);
+		}
+	},
+
 	placeSwords: function(x, y, s)
 	{
 		this.hater = game.add.sprite(x, y, s);
 		game.physics.enable(this.hater);
 		this.hater.body.setSize(16, 16);	
+	},
+
+	spawnEnemy: function(x, y)
+	{
+		var newEnemy = this.enemies.getFirstDead();
+		newEnemy.reset(x * 16, y * 16, 1);
+
 	},
 	
 	getSword: function(player, sword)
@@ -138,26 +164,16 @@ var GameplayState =
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 750;
 		
-		// Instantiate the hater
-		this.placeSwords(32, 0, 'sword');
-/*		
-		this.hater = game.add.sprite(32, 0, 'sword');
-		game.physics.enable(this.hater);
-		this.hater.body.setSize(16, 16);
-*/
+		// Instantiate the an item
+		this.placeSwords(64, 0, 'sword');
 
+		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
+		this.enemies.createMultiple(10, 'wizard', 18);
+		this.enemies.setAll('checkWorldBounds', true);
+		this.enemies.forEach(function(enemy) {enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
-/*
-		this.scollect = game.add.group();
-		this.scollect.enableBody = true;
-		
-		for (var i = 0; i < 12; i++)
-		{
-			var s = scollect.create(i * 70, 0, 'sword');
-			s.body.gravity.y = 6;
-			s.body.bounce.y = 0.7 + Math.random() * 0.2;
-		}
-*/		
+		this.spawnEnemy(8, 0);
+
 		// Instantiate the player
 		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
 		this.player.animations.add('walkRight', [0, 1], 5, true, true);
@@ -169,6 +185,7 @@ var GameplayState =
 		this.player.canShoot = true;
 		this.player.knockedBack = false;
 		this.player.flickering = false;
+		this.player.anchor.x = 0.5;
 		game.physics.enable(this.player);
 		this.player.body.setSize(16, 16);
 
@@ -199,11 +216,13 @@ var GameplayState =
 
 	update: function()
 	{
-		game.physics.arcade.collide(this.player, this.layer);//perform collision detection between player and layer(map)
+		game.physics.arcade.collide(this.player, this.layer);
 		game.physics.arcade.collide(this.hater, this.layer);
-//		game.physics.arcade.collide(this.scollect, this.layer);
+		game.physics.arcade.collide(this.enemies, this.layer);
 
 		game.physics.arcade.overlap(this.player, this.hater, this.getSword, null, this);
+		game.physics.arcade.overlap(this.playerBullets, this.enemies, this.damageEnemy, null, this);
+		game.physics.arcade.overlap(this.player, this.enemies, this.damagePlayer, null, this);
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
@@ -268,8 +287,7 @@ var GameplayState =
 
 	render: function()
 	{
-		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
-		//game.debug.body(this.hater, 'red');
+		//this.enemies.forEach(function(enemy) { game.debug.body(enemy); }, this, false);
 	}
 	
 };
