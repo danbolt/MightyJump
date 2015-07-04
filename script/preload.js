@@ -13,6 +13,6 @@ var PreloadState =
 
 	create: function()
 	{
-		game.state.start('Gameplay');
+		game.state.start('TitleScreen');
 	}
 };

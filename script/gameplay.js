@@ -16,7 +16,6 @@ var GameplayState =
 	health: 0,
 	startingHealth: 3,
 
-	score: 0,
 	scoreText: null,
 	
 	damageEnemy: function(bullet, enemy)
@@ -54,8 +53,8 @@ var GameplayState =
 	getSword: function(player, sword)
 	{
 		sword.kill();
-		this.score += 10;
-		this.scoreText.text = 'Score: ' + this.score;
+		PlayerScore += 10;
+		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
 	
 	knockBackPlayer: function(right)
@@ -206,7 +205,7 @@ var GameplayState =
 				bullet.animations.play('fly');
 			}, this, false);
 		
-		this.scoreText = game.add.text(8, 8, 'score: 0', { font: '8px Conv_Gamegirl', fill: 'white' });
+		this.scoreText = game.add.text(8, 8, 'score: ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white' });
 		this.scoreText.smoothed = false;
 		this.scoreText.fixedToCamera = true;
 
