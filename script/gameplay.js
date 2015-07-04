@@ -91,7 +91,7 @@ var GameplayState =
 
 	render: function()
 	{
-		game.debug.text(window.mobileAndTabletCheck() ? "mobile!" : "desktop", 16, 16, 'white');
+		game.debug.text(window.mobileAndTabletCheck() ? 'mobile'! : 'desktop', 16, 16, 'white');
 
 		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
 		game.debug.body(this.hater, 'red');
