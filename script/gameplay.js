@@ -4,6 +4,8 @@ var GameplayState =
 	hater: null,
 
 	playerBullets: null,
+	bulletSpeed: 100,
+
 	enemies: null,
 
 	map: null,
@@ -55,8 +57,25 @@ var GameplayState =
 		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
 		this.player.animations.add('shootRight', [4], 5, false, true);
 		this.player.animations.add('shootLeft', [5], 5, false, true);
+		this.player.facingRight = true;
+		this.player.isShootButtonDown = false;
 		game.physics.enable(this.player);
 		this.player.body.setSize(16, 16);
+
+		// Instantiate the bullet group
+		this.playerBullets = game.add.group(undefined, 'player bullets', false, true, Phaser.Physics.ARCADE);
+		this.playerBullets.createMultiple(10, 'projectile', 0);
+		this.playerBullets.setAll('outOfBoundsKill', true);
+		this.playerBullets.setAll('checkWorldBounds', true);
+		this.playerBullets.setAll('anchor', new Phaser.Point(0.5, 0.5));
+
+		// set physics and animation data for the bullets.
+		this.playerBullets.forEach(function(bullet) {
+				bullet.body.allowGravity = false;
+
+				bullet.animations.add('fly', [0, 1, 2, 3], 16, true, true);
+				bullet.animations.play('fly');
+			}, this, false);
 
 		// Instantiate a tilemap
 		this.map = game.add.tilemap(null);
@@ -84,11 +103,13 @@ var GameplayState =
 		{
 			this.player.body.velocity.x = 50;
 			this.player.animations.play('walkRight');
+			this.player.facingRight = true;
 		}
 		else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown)
 		{
 			this.player.body.velocity.x = -50;
 			this.player.animations.play('walkLeft');
+			this.player.facingRight = false;
 		}
 		else
 		{
@@ -98,6 +119,24 @@ var GameplayState =
 		if ((AButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.Z)) && this.player.body.onFloor())
 		{
 			this.player.body.velocity.y = -250;
+		}
+
+		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false)
+		{
+			var newBullet = this.playerBullets.getFirstDead();
+
+			this.player.isShootButtonDown = true;
+
+			if (newBullet != null)
+			{
+				newBullet.reset(this.player.x + (this.player.facingRight ? 16 : 0), this.player.y + 8, 1);
+				newBullet.body.velocity.x = this.bulletSpeed * (this.player.facingRight ? 1 : -1);
+				newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
+			}
+		}
+		else if (!(BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == true)
+		{
+			this.player.isShootButtonDown = false;
 		}
 	},
 
