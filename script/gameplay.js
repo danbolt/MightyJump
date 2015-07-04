@@ -52,11 +52,15 @@ var GameplayState =
 		this.hater.body.setSize(16, 16);	
 	},
 
-	spawnEnemy: function(x, y)
+	spawnEnemy: function(x, y, enemyUpdate)
 	{
 		var newEnemy = this.enemies.getFirstDead();
 		newEnemy.reset(x * 16, y * 16, 1);
 
+		if (enemyUpdate)
+		{
+			newEnemy.enemyUpdate = enemyUpdate;
+		}
 	},
 	
 	getSword: function(player, sword)
@@ -181,9 +185,25 @@ var GameplayState =
 
 		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
 		this.enemies.createMultiple(10, 'wizard', 18);
-		this.enemies.forEach(function(enemy) { enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
+		this.enemies.forEach(function(enemy) { enemy.enemyUpdate = function(self){}; enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
-		this.spawnEnemy(8, 0);
+		this.spawnEnemy(8, 6, function(self)
+			{
+				if (self.jumpWaitTime === undefined)
+				{
+					self.jumpWaitTime = 0;
+				}
+				else
+				{
+					self.jumpWaitTime += game.time.physicsElapsed;
+
+					if (self.jumpWaitTime > 1.25 && self.body.onFloor())
+					{
+						self.jumpWaitTime = 0;
+						self.body.velocity.y = -200;
+					}
+				}
+			});
 
 		// Instantiate the player
 		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
@@ -237,6 +257,8 @@ var GameplayState =
 		game.physics.arcade.overlap(this.player, this.enemies, this.damagePlayer, null, this);
 
 		game.physics.arcade.overlap(this.player, this.endLevelGem, this.endLevel, null, this);
+
+		this.enemies.forEachAlive(function(enemy) { enemy.enemyUpdate(enemy); }, this);
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
