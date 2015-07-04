@@ -2,8 +2,14 @@ var GameplayState =
 {
 	player: null,
 	hater: null,
+
+	playerBullets: null,
+	enemies: null,
+
 	map: null,
 	layer: null,
+
+	scoreText: null,
 
 	preload: function()
 	{
@@ -65,8 +71,6 @@ var GameplayState =
 			this.map.putTile(0, i, 14);
 		}
 
-		console.log(this.map);
-
 		// Have the Camera follow the player
 		game.camera.follow(this.player);
 	},
@@ -99,8 +103,6 @@ var GameplayState =
 
 	render: function()
 	{
-		game.debug.text(window.mobileAndTabletCheck() ? 'mobile' : 'desktop', 16, 16, 'white');
-
 		//game.debug.body(this.player, 'blue');//Draw the player member variable.  Give it colour blue
 		//game.debug.body(this.hater, 'red');
 	}
