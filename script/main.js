@@ -21,6 +21,7 @@ var main = function()
 	game.state.add('Gameplay', GameplayState, false);
 	game.state.add('Preload', PreloadState, false);
 	game.state.add('LevelStart', LevelStart, false);
+	game.state.add('LevelComplete', LevelComplete, false);
 	game.state.add('TitleScreen', TitleScreen, false);
 	game.state.add('Setup', SetupState, true);
 }

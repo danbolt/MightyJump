@@ -2,6 +2,7 @@ var GameplayState =
 {
 	player: null,
 	hater: null,
+	endLevelGem: null,
 
 	enemies: null,
 	
@@ -18,6 +19,11 @@ var GameplayState =
 
 	scoreText: null,
 	
+	endLevel: function()
+	{
+		game.state.start('LevelComplete');
+	},
+
 	damageEnemy: function(bullet, enemy)
 	{
 		bullet.kill();
@@ -127,6 +133,10 @@ var GameplayState =
 				//
 			}
 		}
+
+		this.endLevelGem = game.add.sprite(48 * 16 - 32, j * 16 - 16, 'wizard', 32);
+		game.physics.enable(this.endLevelGem);
+		this.endLevelGem.body.allowGravity = false;
 	},
 
 	preload: function()
@@ -222,6 +232,8 @@ var GameplayState =
 		game.physics.arcade.overlap(this.player, this.hater, this.getSword, null, this);
 		game.physics.arcade.overlap(this.playerBullets, this.enemies, this.damageEnemy, null, this);
 		game.physics.arcade.overlap(this.player, this.enemies, this.damagePlayer, null, this);
+
+		game.physics.arcade.overlap(this.player, this.endLevelGem, this.endLevel, null, this);
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
