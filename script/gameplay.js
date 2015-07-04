@@ -2,6 +2,7 @@ var GameplayState =
 {
 	player: null,
 	hater: null,
+	endLevelGem: null,
 
 	enemies: null,
 	
@@ -16,13 +17,20 @@ var GameplayState =
 	health: 0,
 	startingHealth: 3,
 
-	score: 0,
 	scoreText: null,
 	
+	endLevel: function()
+	{
+		game.state.start('LevelComplete');
+	},
+
 	damageEnemy: function(bullet, enemy)
 	{
 		bullet.kill();
 		enemy.kill();
+
+		PlayerScore += 10;
+		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
 
 	damagePlayer: function(player, enemy)
@@ -54,8 +62,8 @@ var GameplayState =
 	getSword: function(player, sword)
 	{
 		sword.kill();
-		this.score += 10;
-		this.scoreText.text = 'Score: ' + this.score;
+		PlayerScore += 100;
+		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
 	
 	knockBackPlayer: function(right)
@@ -128,6 +136,10 @@ var GameplayState =
 				//
 			}
 		}
+
+		this.endLevelGem = game.add.sprite(48 * 16 - 32, j * 16 - 16, 'wizard', 32);
+		game.physics.enable(this.endLevelGem);
+		this.endLevelGem.body.allowGravity = false;
 	},
 
 	preload: function()
@@ -169,8 +181,7 @@ var GameplayState =
 
 		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
 		this.enemies.createMultiple(10, 'wizard', 18);
-		this.enemies.setAll('checkWorldBounds', true);
-		this.enemies.forEach(function(enemy) {enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
+		this.enemies.forEach(function(enemy) { enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
 		this.spawnEnemy(8, 0);
 
@@ -187,6 +198,7 @@ var GameplayState =
 		this.player.flickering = false;
 		this.player.anchor.x = 0.5;
 		game.physics.enable(this.player);
+		this.player.body.collideWorldBounds = true;
 		this.player.body.setSize(16, 16);
 
 		// Instantiate the bullet group
@@ -206,7 +218,7 @@ var GameplayState =
 				bullet.animations.play('fly');
 			}, this, false);
 		
-		this.scoreText = game.add.text(8, 8, 'score: 0', { font: '8px Conv_Gamegirl', fill: 'white' });
+		this.scoreText = game.add.text(8, 8, 'score: ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white' });
 		this.scoreText.smoothed = false;
 		this.scoreText.fixedToCamera = true;
 
@@ -223,6 +235,8 @@ var GameplayState =
 		game.physics.arcade.overlap(this.player, this.hater, this.getSword, null, this);
 		game.physics.arcade.overlap(this.playerBullets, this.enemies, this.damageEnemy, null, this);
 		game.physics.arcade.overlap(this.player, this.enemies, this.damagePlayer, null, this);
+
+		game.physics.arcade.overlap(this.player, this.endLevelGem, this.endLevel, null, this);
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
