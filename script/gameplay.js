@@ -32,6 +32,62 @@ var GameplayState =
 		this.game.time.events.add(1000, function() { this.player.flickering = false; }, this);
 	},
 
+	generateLevel: function()
+	{
+		// Instantiate a tilemap
+		this.map = game.add.tilemap(null);
+		this.layer = this.map.create('default', 48, 15, 16, 16);
+		this.layer.resizeWorld();
+		this.map.setCollisionBetween(0, 7);
+		this.map.addTilesetImage('tiles');
+
+		// Generate the level floor
+		for (var i = 0; i < 48; i++)
+		{
+			this.map.putTile(1, i, 13);
+			this.map.putTile(1, i, 14);
+		}
+
+		var currentHeight = 0;
+		// Generate the lengths
+		for (var i = 0; i < 12; i++)
+		{
+			for (var j = 12; j > 12 - (currentHeight); j--)
+			{
+				var tileToPut = 2;
+				if (j == 12 - (currentHeight) + 1)
+				{
+					tileToPut = 0;
+				}
+
+				this.map.putTile(tileToPut, i * 4, j);
+				this.map.putTile(tileToPut, i * 4 + 1, j);
+				this.map.putTile(tileToPut, i * 4 + 2, j);
+				this.map.putTile(tileToPut, i * 4 + 3, j);
+			}
+
+			var roll = Math.random() * 10;
+			if (roll < 4)
+			{
+				if (currentHeight < 4)
+				{
+					currentHeight = currentHeight + 2;
+				}
+			}
+			else if (roll > 6)
+			{
+				if (currentHeight > 0)
+				{
+					currentHeight = currentHeight - 2;
+				}
+			}
+			else
+			{
+				//
+			}
+		}
+	},
+
 	preload: function()
 	{
 		//
@@ -61,6 +117,8 @@ var GameplayState =
 		aButton.onInputOut.add(function() { AButtonDown = false; }, this);
 		aButton.fixedToCamera = true;
 
+		this.generateLevel();
+
 		// Initialize the physics system
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 750;
@@ -71,7 +129,7 @@ var GameplayState =
 		this.hater.body.setSize(16, 16);
 
 		// Instantiate the player
-		this.player = game.add.sprite(0, 0, 'wizard'); //Step 2 specify image for player
+		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
 		this.player.animations.add('walkRight', [0, 1], 5, true, true);
 		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
 		this.player.animations.add('shootRight', [4], 5, true, true);
@@ -101,19 +159,6 @@ var GameplayState =
 				bullet.animations.play('fly');
 			}, this, false);
 
-		// Instantiate a tilemap
-		this.map = game.add.tilemap(null);
-		this.layer = this.map.create('default', 24, 15, 16, 16);
-		this.layer.resizeWorld();
-		this.map.setCollisionBetween(0, 7);
-		this.map.addTilesetImage('tiles');
-
-		for (var i = 0; i < 24; i++)
-		{
-			this.map.putTile(0, i, 13);
-			this.map.putTile(0, i, 14);
-		}
-
 		// Have the Camera follow the player
 		game.camera.follow(this.player);
 	},
@@ -125,7 +170,7 @@ var GameplayState =
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
-			this.player.body.velocity.x = 50;
+			this.player.body.velocity.x = 75;
 			if (this.player.animations.currentAnim.name != 'shootRight')
 			{
 				this.player.animations.play('walkRight');
@@ -134,7 +179,7 @@ var GameplayState =
 		}
 		else if ((game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown) && this.player.knockedBack == false)
 		{
-			this.player.body.velocity.x = -50;
+			this.player.body.velocity.x = -75;
 			if (this.player.animations.currentAnim.name != 'shootLeft')
 			{
 				this.player.animations.play('walkLeft');
