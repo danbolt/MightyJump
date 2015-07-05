@@ -31,7 +31,20 @@ var GameplayState =
 		}
 	},
 	
-
+	drawHealth: function()
+	{
+		for (var i = 0; i < this.displayhealth.children.length; i++)
+		{
+			if (i > this.health - 1)
+			{
+				this.displayhealth.children[i].frame = 0;
+			}
+			else
+			{
+				this.displayhealth.children[i].frame = 1;
+			}
+		}
+	},
 	
 	endLevel: function()
 	{
@@ -49,13 +62,35 @@ var GameplayState =
 
 	damagePlayer: function(player, enemy)
 	{
-		if (player.x < enemy.x)
+		this.health = this.health - 1;
+
+		this.drawHealth();
+
+		if (this.health < 1)
 		{
-			this.knockBackPlayer(false);
+			this.player.animations.play('die');
+			this.player.body.collideWorldBounds = false;
+			this.player.body.velocity.x = 0;
+			this.player.body.velocity.y = -150;
+
+			game.time.events.add(1250, function() { game.state.start('GameOver'); }, this);
 		}
 		else
 		{
-			this.knockBackPlayer(true);
+			// If the enemy is a bullet, kill it
+			if (enemy.body.allowGravity == false)
+			{
+				enemy.kill();
+			}
+
+			if (player.x < enemy.x)
+			{
+				this.knockBackPlayer(false);
+			}
+			else
+			{
+				this.knockBackPlayer(true);
+			}
 		}
 	},
 
@@ -252,6 +287,7 @@ var GameplayState =
 		this.player.animations.add('walkLeft', [2, 3], 5, true, true);
 		this.player.animations.add('shootRight', [4], 5, true, true);
 		this.player.animations.add('shootLeft', [5], 5, true, true);
+		this.player.animations.add('die', [6], 5, true, true);
 		this.player.facingRight = true;
 		this.player.isShootButtonDown = false;
 		this.player.canShoot = true;
@@ -308,7 +344,10 @@ var GameplayState =
 
 	update: function()
 	{
-		game.physics.arcade.collide(this.player, this.layer);
+		if (this.health > 0)
+		{
+			game.physics.arcade.collide(this.player, this.layer);
+		}
 		game.physics.arcade.collide(this.hater, this.layer);
 		game.physics.arcade.collide(this.enemies, this.layer);
 
@@ -321,7 +360,7 @@ var GameplayState =
 
 		this.enemies.forEachAlive(function(enemy) { enemy.enemyUpdate.call(this, enemy); }, this);
 		
-		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
+		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false && this.health > 0)
 		{
 			this.player.body.velocity.x = 75;
 			if (this.player.animations.currentAnim.name != 'shootRight')
@@ -330,7 +369,7 @@ var GameplayState =
 			}
 			this.player.facingRight = true;
 		}
-		else if ((game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown) && this.player.knockedBack == false)
+		else if ((game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || LeftButtonDown) && this.player.knockedBack == false && this.health > 0)
 		{
 			this.player.body.velocity.x = -75;
 			if (this.player.animations.currentAnim.name != 'shootLeft')
@@ -353,7 +392,7 @@ var GameplayState =
 			this.player.body.velocity.y = -250;
 		}
 
-		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true && this.player.knockedBack == false)
+		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true && this.player.knockedBack == false && this.health > 0)
 		{
 			var newBullet = this.playerBullets.getFirstDead();
 
@@ -368,7 +407,13 @@ var GameplayState =
 				newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
 
 				this.player.animations.play(this.player.facingRight ? 'shootRight' : 'shootLeft');
-				this.game.time.events.add(300, function() { this.player.animations.play(this.player.facingRight ? 'walkRight' : 'walkLeft'); }, this);
+				this.game.time.events.add(300, function()
+					{
+						if (this.health > 0)
+						{
+							this.player.animations.play(this.player.facingRight ? 'walkRight' : 'walkLeft');
+						}
+					}, this);
 			}
 		}
 		else if (!(BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == true)
