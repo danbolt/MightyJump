@@ -111,6 +111,55 @@ var GameplayState =
 			newEnemy.enemyUpdate = enemyUpdate;
 		}
 	},
+
+	spawnJumper: function(x, y)
+	{
+		this.spawnEnemy(x, y, function(self)
+			{
+				if (self.jumpWaitTime === undefined)
+				{
+					self.jumpWaitTime = 0;
+				}
+				else
+				{
+					self.jumpWaitTime += game.time.physicsElapsed;
+
+					if (self.jumpWaitTime > 1.25 && self.body.onFloor())
+					{
+						self.jumpWaitTime = 0;
+						self.body.velocity.y = -200;
+					}
+				}
+			});
+	},
+
+	spawnShooter: function(x, y)
+	{
+		this.spawnEnemy(x, y, function(self)
+			{
+				if (self.shootWaitTime === undefined)
+				{
+					self.shootWaitTime = 0;
+				}
+				else
+				{
+					self.shootWaitTime += game.time.physicsElapsed;
+
+					if (self.shootWaitTime > 1.25)
+					{
+						self.shootWaitTime = 0;
+
+						var newBullet = this.enemyBullets.getFirstDead();
+						if (newBullet != null)
+						{
+							newBullet.reset(self.x, self.y + 8, 1);
+							newBullet.body.velocity.x = this.bulletSpeed * -1;
+							newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
+						}
+					}
+				}
+			});
+	},
 	
 	getSword: function(player, sword)
 	{
@@ -236,50 +285,9 @@ var GameplayState =
 		this.enemies.createMultiple(10, 'wizard', 18);
 		this.enemies.forEach(function(enemy) { enemy.enemyUpdate = function(self){}; enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
-		/*
-		this.spawnEnemy(8, 6, function(self)
-			{
-				if (self.jumpWaitTime === undefined)
-				{
-					self.jumpWaitTime = 0;
-				}
-				else
-				{
-					self.jumpWaitTime += game.time.physicsElapsed;
+		this.spawnJumper(10, 2);
 
-					if (self.jumpWaitTime > 1.25 && self.body.onFloor())
-					{
-						self.jumpWaitTime = 0;
-						self.body.velocity.y = -200;
-					}
-				}
-			});
-		*/
-
-		this.spawnEnemy(8, 6, function(self)
-			{
-				if (self.shootWaitTime === undefined)
-				{
-					self.shootWaitTime = 0;
-				}
-				else
-				{
-					self.shootWaitTime += game.time.physicsElapsed;
-
-					if (self.shootWaitTime > 1.25)
-					{
-						self.shootWaitTime = 0;
-
-						var newBullet = this.enemyBullets.getFirstDead();
-						if (newBullet != null)
-						{
-							newBullet.reset(self.x, self.y + 8, 1);
-							newBullet.body.velocity.x = this.bulletSpeed * -1;
-							newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
-						}
-					}
-				}
-			});
+		this.spawnShooter(12, 2);
 
 		// Instantiate the player
 		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
