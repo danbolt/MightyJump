@@ -2,9 +2,13 @@ var TitleScreen =
 {
     spaceDown: false,
 
+    startse: null,
+
 	create: function()
 	{
 		this.spaceDown = false;
+
+		this.startse=game.add.audio('Start');
 
 		var logo = game.add.sprite(0, 48, 'logo');
 
@@ -31,6 +35,8 @@ var TitleScreen =
 		aButton.onInputUp.add(function() { AButtonDown = false; }, this);
 		aButton.onInputOut.add(function() { AButtonDown = false; }, this);
 		aButton.fixedToCamera = true;
+
+		this.startse.play();
 	},
 
 	update: function()
