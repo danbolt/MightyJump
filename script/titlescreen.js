@@ -45,6 +45,7 @@ var TitleScreen =
 
 			CurrentLevel = 0;
 			PlayerScore = 0;
+			PlayerHealth = 3;
 
 			game.state.start('LevelStart');
 		}

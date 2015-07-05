@@ -8,6 +8,7 @@ var AButtonDown = false;
 
 var CurrentLevel = 0;
 var PlayerScore = 0;
+var PlayerHealth = 0;
 
 var main = function()
 {
