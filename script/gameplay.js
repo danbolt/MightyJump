@@ -118,7 +118,7 @@ var GameplayState =
 			{
 				if (self.jumpWaitTime === undefined)
 				{
-					self.jumpWaitTime = 0;
+					self.jumpWaitTime = Math.random() * 0.75;
 				}
 				else
 				{
@@ -180,7 +180,7 @@ var GameplayState =
 		this.player.body.velocity.y = -125;
 		this.player.body.velocity.x = right ? 100 : -100;
 		this.game.time.events.add(300, function() { this.player.knockedBack = false; }, this);
-		this.game.time.events.repeat(50, 20, function() { this.player.visible = !this.player.visible }, this);
+		this.game.time.events.repeat(50, 20, function() { this.player.alpha = Math.abs(1 - this.player.alpha); }, this);
 		this.game.time.events.add(1000, function() { this.player.flickering = false; }, this);
 	},
 
@@ -237,6 +237,11 @@ var GameplayState =
 			{
 				//
 			}
+
+			if (currentHeight == 0)
+			{
+				currentHeight = 2;
+			}
 		}
 
 		this.endLevelGem = game.add.sprite(48 * 16 - 32, j * 16 - 16, 'wizard', 32);
@@ -284,10 +289,6 @@ var GameplayState =
 		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
 		this.enemies.createMultiple(10, 'wizard', 18);
 		this.enemies.forEach(function(enemy) { enemy.enemyUpdate = function(self){}; enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
-
-		this.spawnJumper(10, 2);
-
-		this.spawnShooter(12, 2);
 
 		// Instantiate the player
 		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
@@ -340,6 +341,21 @@ var GameplayState =
 		this.scoreText = game.add.text(8, 8, 'score: ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white' });
 		this.scoreText.smoothed = false;
 		this.scoreText.fixedToCamera = true;
+
+		// spawn enemies
+		for (var i = 1; i < 7; i++)
+		{
+			var roll = Math.random() * 10;
+
+			if (roll < 5)
+			{
+				this.spawnJumper(i * 6, 2);
+			}
+			else
+			{
+				this.spawnShooter(i * 7, 2);
+			}
+		}
 
 		//Hearts
 		this.displayhealth = game.add.group();
@@ -431,7 +447,7 @@ var GameplayState =
 
 		if (this.player.flickering == false)
 		{
-			this.player.visible = true;
+			this.player.alpha = 1;
 		}
 	},
 
