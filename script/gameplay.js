@@ -62,6 +62,11 @@ var GameplayState =
 
 	damagePlayer: function(player, enemy)
 	{
+		if (PlayerHealth < 1)
+		{
+			return;
+		}
+		
 		PlayerHealth = PlayerHealth - 1;
 
 		this.drawHealth();
@@ -243,6 +248,40 @@ var GameplayState =
 			{
 				currentHeight = 2;
 			}
+		}
+
+		var platformHeight = 7;
+		for (var i = 1; i < 11; i++)
+		{
+
+			platformHeight -= ~~(Math.random() * 5 - 2.5);
+
+			if (Math.random() * 10 < 1)
+			{
+				continue;
+			}
+
+			this.map.putTile(3, i * 4, platformHeight);
+			this.map.putTile(3, i * 4 + 1, platformHeight);
+			this.map.putTile(3, i * 4 + 1, platformHeight);
+			this.map.putTile(3, i * 4 + 1, platformHeight);
+		}
+
+		var platformHeight = 7;
+		for (var i = 1; i < 11; i++)
+		{
+
+			platformHeight -= ~~(Math.random() * 5 - 2.5);
+
+			if (Math.random() * 10 < 1)
+			{
+				continue;
+			}
+
+			this.map.putTile(4, i * 4, platformHeight);
+			this.map.putTile(4, i * 4 + 1, platformHeight);
+			this.map.putTile(4, i * 4 + 1, platformHeight);
+			this.map.putTile(4, i * 4 + 1, platformHeight);
 		}
 
 		this.endLevelGem = game.add.sprite(48 * 16 - 32, j * 16 - 16, 'wizard', 32);
