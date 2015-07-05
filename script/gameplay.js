@@ -9,6 +9,8 @@ var GameplayState =
 	playerBullets: null,
 	bulletSpeed: 125,
 
+	enemyBullets: null,
+
 	enemies: null,
 
 	map: null,
@@ -52,11 +54,15 @@ var GameplayState =
 		this.hater.body.setSize(16, 16);	
 	},
 
-	spawnEnemy: function(x, y)
+	spawnEnemy: function(x, y, enemyUpdate)
 	{
 		var newEnemy = this.enemies.getFirstDead();
 		newEnemy.reset(x * 16, y * 16, 1);
 
+		if (enemyUpdate)
+		{
+			newEnemy.enemyUpdate = enemyUpdate;
+		}
 	},
 	
 	getSword: function(player, sword)
@@ -181,9 +187,52 @@ var GameplayState =
 
 		this.enemies = game.add.group(undefined, 'enemies', false, true, Phaser.Physics.ARCADE);
 		this.enemies.createMultiple(10, 'wizard', 18);
-		this.enemies.forEach(function(enemy) { enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
+		this.enemies.forEach(function(enemy) { enemy.enemyUpdate = function(self){}; enemy.body.collideWorldBounds = true; enemy.body.setSize(8, 16); enemy.anchor.x = 0.5;}, this, false);
 
-		this.spawnEnemy(8, 0);
+		/*
+		this.spawnEnemy(8, 6, function(self)
+			{
+				if (self.jumpWaitTime === undefined)
+				{
+					self.jumpWaitTime = 0;
+				}
+				else
+				{
+					self.jumpWaitTime += game.time.physicsElapsed;
+
+					if (self.jumpWaitTime > 1.25 && self.body.onFloor())
+					{
+						self.jumpWaitTime = 0;
+						self.body.velocity.y = -200;
+					}
+				}
+			});
+		*/
+
+		this.spawnEnemy(8, 6, function(self)
+			{
+				if (self.shootWaitTime === undefined)
+				{
+					self.shootWaitTime = 0;
+				}
+				else
+				{
+					self.shootWaitTime += game.time.physicsElapsed;
+
+					if (self.shootWaitTime > 1.25)
+					{
+						self.shootWaitTime = 0;
+
+						var newBullet = this.enemyBullets.getFirstDead();
+						if (newBullet != null)
+						{
+							newBullet.reset(self.x, self.y + 8, 1);
+							newBullet.body.velocity.x = this.bulletSpeed * -1;
+							newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
+						}
+					}
+				}
+			});
 
 		// Instantiate the player
 		this.player = game.add.sprite(16, 64, 'wizard'); //Step 2 specify image for player
@@ -199,7 +248,22 @@ var GameplayState =
 		this.player.anchor.x = 0.5;
 		game.physics.enable(this.player);
 		this.player.body.collideWorldBounds = true;
-		this.player.body.setSize(16, 16);
+		this.player.body.setSize(10, 16);
+
+		this.enemyBullets = game.add.group(undefined, 'enemy bullets', false, true, Phaser.Physics.ARCADE);
+		this.enemyBullets.createMultiple(10, 'projectile', 0);
+		this.enemyBullets.setAll('outOfBoundsKill', true);
+		this.enemyBullets.setAll('checkWorldBounds', true);
+		this.enemyBullets.setAll('tint', 0xBB1111);
+		this.enemyBullets.setAll('anchor', new Phaser.Point(0.5, 0.5));
+
+		// set physics and animation data for the enemy bullets.
+		this.enemyBullets.forEach(function(bullet) {
+				bullet.body.allowGravity = false;
+
+				bullet.animations.add('fly', [0, 1, 2, 3], 16, true, true);
+				bullet.animations.play('fly');
+			}, this, false);
 
 		// Instantiate the bullet group
 		this.playerBullets = game.add.group(undefined, 'player bullets', false, true, Phaser.Physics.ARCADE);
@@ -235,8 +299,11 @@ var GameplayState =
 		game.physics.arcade.overlap(this.player, this.hater, this.getSword, null, this);
 		game.physics.arcade.overlap(this.playerBullets, this.enemies, this.damageEnemy, null, this);
 		game.physics.arcade.overlap(this.player, this.enemies, this.damagePlayer, null, this);
+		game.physics.arcade.overlap(this.player, this.enemyBullets, this.damagePlayer, null, this);
 
 		game.physics.arcade.overlap(this.player, this.endLevelGem, this.endLevel, null, this);
+
+		this.enemies.forEachAlive(function(enemy) { enemy.enemyUpdate.call(this, enemy); }, this);
 		
 		if ((game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) || RightButtonDown) && this.player.knockedBack == false)
 		{
