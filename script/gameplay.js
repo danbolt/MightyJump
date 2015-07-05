@@ -9,6 +9,12 @@ var GameplayState =
 	playerBullets: null,
 	bulletSpeed: 125,
 
+	shootse: null,
+	playerdeathse: null,
+	startse: null,
+	enemydeathse: null,
+	jumpse: null,
+	
 	enemyBullets: null,
 
 	enemies: null,
@@ -189,7 +195,7 @@ var GameplayState =
 		aButton.fixedToCamera = true;
 
 		this.generateLevel();
-
+		
 		// Initialize the physics system
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 750;
@@ -294,6 +300,11 @@ var GameplayState =
 				bullet.animations.play('fly');
 			}, this, false);
 
+		this.shootse = game.add.audio('Shoot');//sound effect
+		this.playerdeathse=game.add.audio('PlayerDeath');
+		this.startse=game.add.audio('Start');
+		this.enemydeathse=game.add.audio('EnemyDeath');
+		this.jumpse=game.add.audio('Jump');
 
 		this.scoreText = game.add.text(8, 8, 'score: ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white' });
 		this.scoreText.smoothed = false;
@@ -366,6 +377,8 @@ var GameplayState =
 				newBullet.reset(this.player.x + (this.player.facingRight ? 16 : 0), this.player.y + 8, 1);
 				newBullet.body.velocity.x = this.bulletSpeed * (this.player.facingRight ? 1 : -1);
 				newBullet.lifespan = 750; // the bullet will live for a number of milliseconds
+				
+				this.shootse.play();
 
 				this.player.animations.play(this.player.facingRight ? 'shootRight' : 'shootLeft');
 				this.game.time.events.add(300, function() { this.player.animations.play(this.player.facingRight ? 'walkRight' : 'walkLeft'); }, this);
