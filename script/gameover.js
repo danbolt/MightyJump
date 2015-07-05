@@ -1,16 +1,15 @@
-var TitleScreen = 
+var GameOver =
 {
-    spaceDown: false,
-
 	create: function()
 	{
-		this.spaceDown = false;
+		CurrentLevel++;
 
-		game.add.text(80, 240 / 2, 'title screen', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
+		game.add.text(64, 240 / 2 - 64, 'you died with a\nscore of ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
+		game.add.text(84, 240 / 2 + 32, 'play again!', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
 
-		game.add.text(48, 240 / 2 + 32, 'press A or X to start', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
+		game.time.events.add(4000, function() { game.state.start('TitleScreen'); }, this);
 
-				// Initialize the touchscreen buttons
+		// Initialize the touchscreen buttons
 		var leftButton = game.add.button(0, 240, 'touchbuttons', undefined, this, 0, 0, 1, 0);
 		leftButton.onInputDown.add(function() { LeftButtonDown = true; }, this);
 		leftButton.onInputUp.add(function() { LeftButtonDown = false; }, this);
@@ -31,23 +30,5 @@ var TitleScreen =
 		aButton.onInputUp.add(function() { AButtonDown = false; }, this);
 		aButton.onInputOut.add(function() { AButtonDown = false; }, this);
 		aButton.fixedToCamera = true;
-	},
-
-	update: function()
-	{
-		if ((game.input.keyboard.isDown(Phaser.Keyboard.X) || AButtonDown) && this.spaceDown == false)
-		{
-			this.spaceDown = true;
-		}
-		else if (!(game.input.keyboard.isDown(Phaser.Keyboard.X) || AButtonDown) && this.spaceDown == true)
-		{
-			this.spaceDown = false;
-
-			CurrentLevel = 0;
-			PlayerScore = 0;
-			PlayerHealth = 3;
-
-			game.state.start('LevelStart');
-		}
 	}
 };
