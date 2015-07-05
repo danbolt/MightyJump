@@ -19,6 +19,18 @@ var GameplayState =
 
 	scoreText: null,
 	
+	displayhealth: null,
+	
+	healthCheck: function()
+	{
+		for(var i = 0; i<this.startingHealth; i++)
+		{
+			this.displayhealth.create(18 * i + 8, 24, 'Hearts', 1, true);
+		}
+	},
+	
+
+	
 	endLevel: function()
 	{
 		game.state.start('LevelComplete');
@@ -217,11 +229,15 @@ var GameplayState =
 				bullet.animations.add('fly', [0, 1, 2, 3], 16, true, true);
 				bullet.animations.play('fly');
 			}, this, false);
-		
+
+
 		this.scoreText = game.add.text(8, 8, 'score: ' + PlayerScore, { font: '8px Conv_Gamegirl', fill: 'white' });
 		this.scoreText.smoothed = false;
 		this.scoreText.fixedToCamera = true;
 
+		//Hearts
+		this.displayhealth=game.add.group();
+		this.healthCheck();
 		// Have the Camera follow the player
 		game.camera.follow(this.player);
 	},

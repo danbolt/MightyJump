@@ -9,6 +9,9 @@ var PreloadState =
 		game.load.spritesheet('touchbuttons', '../image/touchButtons.png', 64, 215);
 		game.load.spritesheet('wizard', '../image/wizard.png', 16, 16);
 		game.load.spritesheet('projectile', '../image/projectile.png', 8, 8);
+		game.load.spritesheet('Hearts', '../image/Hearts.png',16,16);
+	
+	
 	},
 
 	create: function()
