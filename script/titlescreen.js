@@ -6,9 +6,9 @@ var TitleScreen =
 	{
 		this.spaceDown = false;
 
-		game.add.text(80, 240 / 2, 'title screen', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
+		var logo = game.add.sprite(0, 48, 'logo');
 
-		game.add.text(48, 240 / 2 + 32, 'press A or X to start', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
+		game.add.text(48, 240 / 2 + 64, 'press A or X to start', { font: '8px Conv_Gamegirl', fill: 'white', align: 'center' });
 
 				// Initialize the touchscreen buttons
 		var leftButton = game.add.button(0, 240, 'touchbuttons', undefined, this, 0, 0, 1, 0);

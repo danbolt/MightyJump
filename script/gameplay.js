@@ -62,6 +62,8 @@ var GameplayState =
 		bullet.kill();
 		enemy.kill();
 
+		this.enemydeathse.play();
+
 		PlayerScore += 10;
 		this.scoreText.text = 'Score: ' + PlayerScore;
 	},
@@ -83,6 +85,8 @@ var GameplayState =
 			this.player.body.collideWorldBounds = false;
 			this.player.body.velocity.x = 0;
 			this.player.body.velocity.y = -150;
+
+			this.playerdeathse.play();
 
 			game.time.events.add(1250, function() { game.state.start('GameOver'); }, this);
 		}
@@ -273,7 +277,7 @@ var GameplayState =
 			this.map.putTile(3, i * 4 + 1, platformHeight);
 		}
 
-		var platformHeight = 7;
+		var platformHeight = 14;
 		for (var i = 1; i < 11; i++)
 		{
 
@@ -465,6 +469,8 @@ var GameplayState =
 		if ((AButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.Z)) && this.player.body.onFloor() && this.player.knockedBack == false)
 		{
 			this.player.body.velocity.y = -250;
+
+			this.jumpse.play();
 		}
 
 		if ((BButtonDown || game.input.keyboard.isDown(Phaser.Keyboard.X)) && this.player.isShootButtonDown == false && this.player.canShoot == true && this.player.knockedBack == false && PlayerHealth > 0)
