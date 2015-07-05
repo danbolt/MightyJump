@@ -101,10 +101,11 @@ var GameplayState =
 		this.hater.body.setSize(16, 16);	
 	},
 
-	spawnEnemy: function(x, y, enemyUpdate)
+	spawnEnemy: function(x, y, frame, enemyUpdate)
 	{
 		var newEnemy = this.enemies.getFirstDead();
 		newEnemy.reset(x * 16, y * 16, 1);
+		newEnemy.frame = frame;
 
 		if (enemyUpdate)
 		{
@@ -114,7 +115,7 @@ var GameplayState =
 
 	spawnJumper: function(x, y)
 	{
-		this.spawnEnemy(x, y, function(self)
+		this.spawnEnemy(x, y, 26, function(self)
 			{
 				if (self.jumpWaitTime === undefined)
 				{
@@ -135,7 +136,7 @@ var GameplayState =
 
 	spawnShooter: function(x, y)
 	{
-		this.spawnEnemy(x, y, function(self)
+		this.spawnEnemy(x, y, 18, function(self)
 			{
 				if (self.shootWaitTime === undefined)
 				{
